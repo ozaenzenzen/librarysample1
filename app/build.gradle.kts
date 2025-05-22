@@ -31,6 +31,11 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
 //    publishing {
 //        singleVariant("release") {
 //            withSourcesJar()
@@ -83,11 +88,11 @@ afterEvaluate {
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
-//                groupId = "com.famdigitalindonesia"
+
                 groupId = "com.github.ozaenzenzen"
                 artifactId = "librarysample1"
-                version = "1.0.1"
-                pom(splitPOM)
+                version = "1.0.0"
+//                pom(splitPOM)
             }
         }
 
