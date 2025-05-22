@@ -2,10 +2,6 @@ plugins {
     id("com.android.library")
     alias(libs.plugins.kotlin.android)
     id("maven-publish") // Make sure this line is present
-    id("signing")
-    id("io.github.gradle-nexus.publish-plugin") version "1.3.0" apply false
-    id("com.vanniktech.maven.publish") version "0.25.3" apply false
-    id("org.jetbrains.dokka") version "1.9.10" // or latest
 }
 
 android {
@@ -13,11 +9,8 @@ android {
     compileSdk = 35
 
     defaultConfig {
-//        applicationId = "com.famdigitalindonesia.librarysample1"
         minSdk = 24
         targetSdk = 35
-//        versionCode = 1
-//        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,6 +31,12 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
@@ -51,59 +50,44 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
+val splitPOM: MavenPom.() -> Unit = {
+    name.set("Library Sample SDK")
+    packaging = "aar"
+    description.set("Official Library Sample Android SDK")
+    url.set("https://github.com/ozaenzenzen/librarysample1")
+
+    licenses {
+        license {
+            name.set("The Apache License, Version 2.0")
+            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+        }
+    }
+
+    developers {
+        developer {
+            id.set("ozaenzenzen")
+            name.set("Fauzan Akmal Mahdi")
+            email.set("recovery252@gmail.com")
+        }
+    }
+
+    scm {
+        connection.set("scm:git:git@github.com:ozaenzenzen/librarysample1.git")
+        developerConnection.set("scm:git@github.com:ozaenzenzen/librarysample1.git")
+        url.set("https://github.com/ozaenzenzen/librarysample1.git")
+    }
+}
+
 afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
-                groupId = "com.famdigitalindonesia"
-                artifactId = "test-library"
+//                groupId = "com.famdigitalindonesia"
+                groupId = "com.github.ozaenzenzen"
+                artifactId = "librarysample1"
                 version = "1.0.0"
-//                artifact(sourcesJar.get())
-//                artifact(javadocJar.get())
-                // pom(splitPOM)
-
-                repositories {
-//                    maven {
-//                        name = "ReleaseRepo"
-//                        url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-//
-//                        credentials {
-//                            username = properties.get("mavenCentralUsername") as String?
-//                            password = properties.get("mavenCentralPassword") as String?
-//                            println("username: $username")
-//                            println("username: $password")
-//                        }
-//                    }
-
-                    maven {
-                        name = "ReleaseRepo"
-                        url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                        credentials {
-                            username = findProperty("mavenCentralUsername")?.toString() ?: System.getenv("OSSRH_USERNAME")
-                            password = findProperty("mavenCentralPassword")?.toString() ?: System.getenv("OSSRH_PASSWORD")
-                        }
-                    }
-
-                    maven {
-                        name = "sonatypeSnapshots"
-                        url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-                        credentials {
-                            username = findProperty("mavenCentralUsername")?.toString() ?: System.getenv("OSSRH_USERNAME")
-                            password = findProperty("mavenCentralPassword")?.toString() ?: System.getenv("OSSRH_PASSWORD")
-                        }
-                    }
-                }
-
-                // artifact("${rootProject.projectDir}/app/build/entou/${project.name}-release.aar")
-//                 artifact("$buildDir/outputs/aar/${project.name}-release.aar")
-                // artifact("$buildDir/outputs/aar/app-release.aar")
-            }
-            create<MavenPublication>("development") {
-                from(components["release"])
-                groupId = "com.famdigitalindonesia"
-                artifactId = "test-library"
-                version = "1.0.0"
+                pom(splitPOM)
             }
         }
 
@@ -118,20 +102,5 @@ afterEvaluate {
                 url = uri("${rootProject.projectDir}/app/build")
             }
         }
-    }
-    signing {
-        useGpgCmd()
-        sign(publishing.publications["release"])
-        sign(configurations.getByName("archives"))
-    }
-
-    tasks.register<PublishToMavenRepository>("publishRelease") {
-        publication = publishing.publications["release"] as MavenPublication
-        repository = publishing.repositories.named<MavenArtifactRepository>("ReleaseRepo").get()
-    }
-
-    tasks.register<PublishToMavenRepository>("publishDev") {
-        publication = publishing.publications["release"] as MavenPublication
-        repository = publishing.repositories.named<MavenArtifactRepository>("DevelopmentRepo").get()
     }
 }
