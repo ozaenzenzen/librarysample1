@@ -91,7 +91,7 @@ afterEvaluate {
 
                 groupId = "com.github.ozaenzenzen"
                 artifactId = "librarysample1"
-                version = "1.0.3"
+                version = "1.0.4"
 //                pom(splitPOM)
             }
         }
