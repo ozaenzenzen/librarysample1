@@ -31,12 +31,12 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
+//    publishing {
+//        singleVariant("release") {
+//            withSourcesJar()
+//            withJavadocJar()
+//        }
+//    }
 }
 
 dependencies {
@@ -86,7 +86,7 @@ afterEvaluate {
 //                groupId = "com.famdigitalindonesia"
                 groupId = "com.github.ozaenzenzen"
                 artifactId = "librarysample1"
-                version = "1.0.0"
+                version = "1.0.1"
                 pom(splitPOM)
             }
         }
